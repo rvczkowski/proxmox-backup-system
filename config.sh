@@ -34,11 +34,11 @@ communicator_switcher="3";
 function ListAllServerIDS() {
 	ids=$(cat /etc/pve/.vmlist | grep node | cut -d '"' -f2 | sort -n | paste -sd' ');
 
-	command="cat /etc/pve/.vmlist";
+	command=$(cat /etc/pve/.vmlist | grep node | wc -l);
 
 	idarray=($ids);
 
-	numberoflines=$($command | grep node | wc -l);
+	numberoflines=$command;
 }
 
 function SendMessage() {
