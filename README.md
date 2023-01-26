@@ -39,7 +39,6 @@ Proces przywracania kopii zapasowej:
 
 - Przejście do katalogu kopii zapasowych
 - Wywołanie polecenia przywracania kopii zapasowej na id z dodatkową cyfrą 1 w porównaniu do maszyny produkcyjnej
-- Wyłączenie maszyny produkcyjnej
 - Włączenie maszyny kopii zapasowej
 - Weryfikacja po zakończeniu procesu przywracania
 - - Jeśli pozytywna: Przekazywana informacja o awarii i aktywacji maszyny zapasowej
