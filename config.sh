@@ -3,13 +3,13 @@
 #----------------------------------------------------------------------------------------------------
 #                                             VARIABLES                                             # 
 #----------------------------------------------------------------------------------------------------
+
 backupdir="/var/lib/vz/dump"
 
-
-
 slack_webhook_link="paste_your_slack_link"
-discord_webhook_link="paste_your_slack_link";
-teams_webhook_link="paste_your_slack_link"
+discord_webhook_link="paste_your_discord_link";
+teams_webhook_link="paste_your_teams_link"
+mattermost_webhook_link="paste_your_mattermost_link"
 
 logdir="/var/log/backup_system";
 
@@ -22,6 +22,7 @@ logdir="/var/log/backup_system";
 	#1 Slack
 	#2 Discord
 	#3 Teams
+	#4 Mattermost
 
 communicator_switcher="3";
 
@@ -51,11 +52,12 @@ function SendMessage() {
 	elif [[ $communicator_switcher == "3" ]]
 	then
 		curl -d "{\"text\": \"$message\"}" -H "Content-Type: application/json" "$teams_webhook_link";
+	elif [[ $communicator_switcher == "4" ]]
+	then
+		curl -i -X POST -d "{\"text\": \"$message\"}" -H "Content-Type: application/json" "$mattermost_webhook_link";
 	else
 		exit 0;
 	fi	
 	
 	
 }
-
-SendMessage;

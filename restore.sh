@@ -10,7 +10,6 @@ function VeryfyingServerStatus() {
 		
 		if grep "status: started" $logdir/qmstatus${idarray[$b]}.log
 		then
-			echo "${idarray[$a]} git";
 			rm $logdir/qmstatus${idarray[$b]}.log
 			exit 0;
 		else
@@ -23,14 +22,15 @@ function RealisingBackup() {
 	cd $backupdir;
 
 	qmrestore vzdump-*-${idarray[$a]}*.vma  1${idarray[$a]} >> $logdir/vzrestore${idarray[$a]}.log
-
+	qm start 1${idarray[$a]};
+	
 	if grep "rescan volumes..." $logdir/vzrestore${idarray[$a]}.log
 	then
-		local message="@here UWAGA! Awaria maszyny ID ${idarray[$a]}! Przywrócono kopię zapasową jako maszyna ID 1${idarray[$a]}";
+		local message="@here Virtual machine ID ${idarray[$a]} is down! Backup restored as machine ID 1${idarray[$a]}";
 		SendMessage;
 		rm -r $logdir/vzrestore${idarray[$a]}.log;
 	else
-		local message="@here UWAGA! Awaria maszyny ID ${idarray[$a]}! Nie przywrócono kopii zapasowej!";
+		local message="@here Virtual machine ID ${idarray[$a]} is down! Backup failed!";
 		SendMessage;
 	fi
 

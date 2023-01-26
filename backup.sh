@@ -6,7 +6,7 @@ source config.sh
 function PreparingToBackup() {
 	for (( a=0; a<=$numberoflines-1; a++ ))
 	do
-		local message="Inicjalizacja procesu tworzenia kopii zapasowej serwera ${idarray[$a]}";
+		local message="Initiating the server backup process of VM ID ${idarray[$a]}";
 		SendMessage;
 		rm vzdump-*-${idarray[$a]}-*
 		RealisingBackup
@@ -20,11 +20,11 @@ function RealisingBackup() {
 
 	if grep "INFO: Backup job finished successfully" $logdir/vzlog${idarray[$a]}.log
 	then
-		local message="Kopia zapasowa serwera ${idarray[$a]} z dnia $DATA została utworzona pomyślnie!";
+		local message="Server backup VM ID ${idarray[$a]} of $DATA has been created successfully!";
 		SendMessage;
 		rm -r $logdir/vzlog${idarray[$b]}.log;
 	else
-		local message="@here UWAGA! Kopia zapasowa serwera ${idarray[$a]} z dnia $DATA zakończyła się niepowodzeniem!";
+		local message="@here ${idarray[$a]} server backup on $DATA failed!";
 		SendMessage;
 	fi
 

@@ -26,7 +26,7 @@ Proces działania:
 Informacja idzie poleceniem curl webhookiem na określonym komunikatorze 
 
 
-## restoring.sh
+## restore.sh
 
 Pętla for z dynamicznie generowanymi do tablicy identyfikatorami
 
