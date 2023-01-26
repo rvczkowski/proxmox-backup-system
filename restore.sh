@@ -1,36 +1,41 @@
 #!/bin/bash
 
-serwer=2
+source config.sh
 
-while [ $serwer -le 5 ]
-do
-	ping -c1 192.168.1.$serwer > /dev/null
-	if [ $? -eq 0 ]
-	then
-		##Zakończenie bez wyzwalania procesu przywracania kopii zapasowej
-		echo "10$serwer git"
-		exit 0
-	else
-		##Przejście do katalogu kopii zapasowych
-		cd /var/lib/vz/dump
 
-		##Wyzwolenie procesu przywracania kopii zapasowej
-		qmrestore vzdump-*-10$serwer*.vma 20$serwer >> vzbackup.log
-
-		##Wyłączenie maszyny ID 101 i włączenie maszyny ID 201
-		qm start 20$serwer
-		qm stop 10$serwer
-
-		##Weryfikacja pomyślnego zakończenia procesu tworzenia kopii zapasowej
-		if grep "rescan volumes..." vzbackup.log
+function VeryfyingServerStatus() {
+	for (( a=0; a<=$numberoflines-1; a++ ))
+	do
+		qm status ${idarray[$a]}; >> $logdir/qmstatus${idarray[$b]}.log
+		
+		if grep "status: started" $logdir/qmstatus${idarray[$b]}.log
 		then
-			MESSAGE="@here UWAGA! Awaria maszyny ID 10$serwer! Przywrócono kopię zapasową jako maszyna ID 20$serwer"
-			curl -d "{\"content\": \"$MESSAGE\"}" -H "Content-Type: application/json" "https://ptb.discord.com/api/webhooks/1063123397267177563/HWOJHT8c0WGwtk3OpPjvSBRlQyxD3dkjDbGzzK3_scWtvcP52-LIGkpFpZr57V-TYvKQ"
-			rm -r vzbackup.log
+			echo "${idarray[$a]} git";
+			rm $logdir/qmstatus${idarray[$b]}.log
+			exit 0;
 		else
-			MESSAGE="@here UWAGA! Awaria maszyny ID 10$serwer! Nie przywrócono kopii zapasowej!"
-			curl -d "{\"content\": \"$MESSAGE\"}" -H "Content-Type: application/json" "https://ptb.discord.com/api/webhooks/1063123397267177563/HWOJHT8c0WGwtk3OpPjvSBRlQyxD3dkjDbGzzK3_scWtvcP52-LIGkpFpZr57V-TYvKQ"
+			RealisingBackup;
 		fi
+	done
+}
+
+function RealisingBackup() {
+	cd $backupdir;
+
+	qmrestore vzdump-*-${idarray[$a]}*.vma  1${idarray[$a]} >> $logdir/vzrestore${idarray[$a]}.log
+
+	if grep "rescan volumes..." $logdir/vzrestore${idarray[$a]}.log
+	then
+		local message="@here UWAGA! Awaria maszyny ID ${idarray[$a]}! Przywrócono kopię zapasową jako maszyna ID 1${idarray[$a]}";
+		SendMessage;
+		rm -r $logdir/vzrestore${idarray[$a]}.log;
+	else
+		local message="@here UWAGA! Awaria maszyny ID ${idarray[$a]}! Nie przywrócono kopii zapasowej!";
+		SendMessage;
 	fi
-	((serwer++))
-done
+
+}
+
+ListAllServerIDS;
+VeryfyingServerStatus;
+
